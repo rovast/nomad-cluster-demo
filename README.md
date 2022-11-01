@@ -125,15 +125,28 @@ nohup nomad agent -config=/etc/nomad.d/client.hcl -bind=192.168.56.104 > ./nomad
 ```hcl
 job "docs" {
   datacenters = ["nanjing"]
-
+  type = "service"
 
   group "example" {
     count = 2
     network {
       port "http" {
-        static = "5678"
+        to = 5678
       }
     }
+    service {
+      name = "doc"
+      tags = ["urlprefix-/docs", "urlprefix-docs.test"]
+      port = "http"
+      check {
+        name     = "alive"
+        type     = "http"
+        path     = "/"
+        interval = "10s"
+        timeout  = "2s"
+      }
+    }
+
     task "server" {
       driver = "docker"
       config {
@@ -141,10 +154,95 @@ job "docs" {
         ports = ["http"]
         args = [
           "-listen",
-          "0.0.0.0:5678",
+          ":5678",
           "-text",
           "hello world",
         ]
+      }
+    }
+  }
+}
+```
+
+
+## 负载均衡（LB）
+
+Ref: https://developer.hashicorp.com/nomad/tutorials/load-balancing/load-balancing-fabio
+
+添加 Job 访问 http://192.168.56.101:4646/ui/jobs，粘贴以下任务
+
+```hcl
+job "fabio" {
+  datacenters = ["nanjing"]
+  type = "system"
+
+  group "fabio" {
+    network {
+      port "lb" {
+        static = 9999
+      }
+      port "ui" {
+        static = 9998
+      }
+    }
+    task "fabio" {
+      driver = "docker"
+      config {
+        image = "fabiolb/fabio"
+        network_mode = "host"
+        ports = ["lb","ui"]
+      }
+
+      resources {
+        cpu    = 200
+        memory = 128
+      }
+    }
+  }
+}
+```
+
+
+使用 Apache server 进行测试
+
+```hcl
+job "webserver" {
+  datacenters = ["nanjing"]
+  type = "service"
+
+  group "webserver" {
+    count = 3
+    network {
+      port "http" {
+        to = 80
+      }
+    }
+
+    service {
+      name = "apache-webserver"
+      tags = ["urlprefix-/web", "urlprefix-a.test"]
+      port = "http"
+      check {
+        name     = "alive"
+        type     = "http"
+        path     = "/"
+        interval = "10s"
+        timeout  = "2s"
+      }
+    }
+
+    restart {
+      attempts = 2
+      interval = "30m"
+      delay = "15s"
+      mode = "fail"
+    }
+
+    task "apache" {
+      driver = "docker"
+      config {
+        image = "httpd:latest"
+        ports = ["http"]
       }
     }
   }
