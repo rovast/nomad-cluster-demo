@@ -1,5 +1,28 @@
 # nomad 集群 demo
 
+## Quick overview
+
+http://192.168.56.101:8500/
+
+<img alt="image" src="https://user-images.githubusercontent.com/9459488/199217746-cde82584-e380-4e0d-93da-ee946f4e7b34.png">
+
+<img alt="image" src="https://user-images.githubusercontent.com/9459488/199217811-c7969cea-9b62-44eb-9a36-03cb242cb496.png">
+
+---
+
+http://192.168.56.101:4646/ui/servers
+
+<img alt="image" src="https://user-images.githubusercontent.com/9459488/199217923-70ae2b30-34bf-40b7-8f8b-677e13cc4c35.png">
+
+<img alt="image" src="https://user-images.githubusercontent.com/9459488/199217958-67d959e5-66d6-448e-8da8-6e32afcef7da.png">
+
+---
+
+http://192.168.56.103:9998/routes?filter=
+
+<img alt="image" src="https://user-images.githubusercontent.com/9459488/199217992-6ca37887-4498-47a8-9497-71bd6f61051f.png">
+
+
 ## Consul 集群
 
 1. 项目根目录执行
