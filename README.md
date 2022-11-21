@@ -48,7 +48,7 @@ nohup consul agent -server -bootstrap-expect 3 \
 -data-dir /etc/consul.d \
 -node=node1 \
 -bind=192.168.56.101 \
--datacenter=nanjing \
+-datacenter=dc1 \
 -ui -client 0.0.0.0 \
 > /home/vagrant/consul-1.log & 2>&1
 ```
@@ -61,7 +61,7 @@ nohup consul agent -server -bootstrap-expect 3 \
 -data-dir /etc/consul.d \
 -node=node2 \
 -bind=192.168.56.102 \
--datacenter=nanjing \
+-datacenter=dc1 \
 -ui -client 0.0.0.0 \
 -join 192.168.56.101 \
 > /home/vagrant/consul-2.log & 2>&1
@@ -75,7 +75,7 @@ nohup consul agent -server -bootstrap-expect 3 \
 -data-dir /etc/consul.d \
 -node=node3 \
 -bind=192.168.56.103 \
--datacenter=nanjing \
+-datacenter=dc1 \
 -ui -client 0.0.0.0 \
 -join 192.168.56.101 \
 > /home/vagrant/consul-3.log & 2>&1
@@ -87,7 +87,7 @@ nohup consul agent -server -bootstrap-expect 3 \
 三个虚拟机下新建文件  `/etc/nomad.d/agent.hcl`
 
 ```hcl
-datacenter = "nanjing"
+datacenter = "dc1"
 data_dir = "/home/vagrant/nomad.d"
 
 client {
@@ -117,7 +117,7 @@ nohup nomad agent -config=/etc/nomad.d/agent.hcl -bind=192.168.56.103 > ./nomad-
 增加 nomad client 配置 `/etc/nomad.d/client.hcl`
 
 ```hcl
-datacenter = "nanjing"
+datacenter = "dc1"
 data_dir = "/home/vagrant/nomad.d"
 
 client {
@@ -135,7 +135,7 @@ nohup consul agent \
 -data-dir /etc/consul.d \
 -node=node4 \
 -bind=192.168.56.104 \
--datacenter=nanjing \
+-datacenter=dc1 \
 -join 192.168.56.101 \
 > /home/vagrant/consul-4.log & 2>&1
 
@@ -147,7 +147,7 @@ nohup nomad agent -config=/etc/nomad.d/client.hcl -bind=192.168.56.104 > ./nomad
 
 ```hcl
 job "docs" {
-  datacenters = ["nanjing"]
+  datacenters = ["dc1"]
   type = "service"
 
   group "example" {
@@ -196,7 +196,7 @@ Ref: https://developer.hashicorp.com/nomad/tutorials/load-balancing/load-balanci
 
 ```hcl
 job "fabio" {
-  datacenters = ["nanjing"]
+  datacenters = ["dc1"]
   type = "system"
 
   group "fabio" {
@@ -230,7 +230,7 @@ job "fabio" {
 
 ```hcl
 job "webserver" {
-  datacenters = ["nanjing"]
+  datacenters = ["dc1"]
   type = "service"
 
   group "webserver" {
